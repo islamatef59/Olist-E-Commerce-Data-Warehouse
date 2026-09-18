@@ -25,6 +25,8 @@ def load_csvs():
         file_path = os.path.join(RESOURCES_PATH, f)
         print(f"Reading {file_path}")
         df = pd.read_csv(file_path)
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(f"{file_path} not found")
         print(f"{f} → {len(df)} rows, {len(df.columns)} columns")
 
 with DAG(
@@ -58,4 +60,8 @@ with DAG(
         bash_command="python /opt/airflow/dags/LoadFilesIntoDatabase.py"
     )
 
-    run_etl_script >> load_to_db
+    load_to_csv = BashOperator(
+        task_id="load_to_csv",
+        bash_command="python /opt/airflow/dags/LoadDataIntoCsv.py"
+    )
+    run_etl_script >> load_to_db>>load_to_csv

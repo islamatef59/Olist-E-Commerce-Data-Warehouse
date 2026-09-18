@@ -1,50 +1,62 @@
-import ExtractData
-import pandas as pd
-from sqlalchemy import create_engine, text
-from dotenv import load_dotenv
 import os
+import pandas as pd
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
+import ETL_Pipline
+
 load_dotenv()
 
-# Access variables
-DB_USER = os.getenv("USER")
-DB_PASS = os.getenv("PASSWORD")
-DB_NAME = os.getenv("DBNAME")
-DB_HOST = os.getenv("HOST")
-DB_PORT = os.getenv("PORT")
-def load_tables_to_postgres(USER,PASSWORD,HOST,PORT,DBNAME,extract_data):
+# Access environment variables
+DB_USER = os.getenv("POSTGRES_USER", "postgres")
+DB_PASS = os.getenv("POSTGRES_PASSWORD", "user")
+DB_HOST = os.getenv("POSTGRES_HOST", "host.docker.internal")
+DB_PORT = os.getenv("POSTGRES_PORT", "5432")
+DB_NAME = os.getenv("POSTGRES_DB", "olist")
 
+tables = ETL_Pipline.build_star_schema()
+
+
+def load_tables_to_postgres(USER, PASSWORD, HOST, PORT, DBNAME, tables_data):
     DATABASE_URL = f"postgresql+psycopg2://{USER}:{PASSWORD}@{HOST}:{PORT}/{DBNAME}"
-
-# Create SQLAlchemy engine
     engine = create_engine(DATABASE_URL)
 
+    tables_dict = {
+        "dim_customers": tables_data["dim_customers"],
+        "dim_seller": tables_data["dim_seller"],
+        "dim_products": tables_data["dim_products"],
+        "dim_date": tables_data["dim_date"],
+        "dim_payments": tables_data["dim_payments"],
+        "fact_orders": tables_data["fact_orders"],
+        "fact_orders_items": tables_data["fact_order_items"],
+        "fact_payments": tables_data["fact_payments"],
+        "fact_reviews": tables_data["fact_reviews"],
+    }
 
-    tables = {
-       "dim_customers": ExtractData.dim_customers,
-       "dim_seller": ExtractData.dim_seller,
-       "dim_products": ExtractData.dim_products,
-       "dim_date": ExtractData.dim_date,
-       "dim_payments": ExtractData.dim_payments,
-       "fact_orders": ExtractData.fact_orders,
-       "fact_orders_items": ExtractData.fact_order_items,
-       "fact_payments": ExtractData.fact_payments,
-       "fact_reviews": ExtractData.fact_reviews,
-         }
-
+    # Open connection context properly
     with engine.begin() as conn:
-          for table_name in tables.keys():
-           conn.execute(text(f"DROP TABLE IF EXISTS {table_name} CASCADE "))
+        # Test database connection
+        conn.execute(text("SELECT 1"))
+        print(f"PostgreSQL connection to '{DBNAME}' successful.")
 
-    for table_name,df in tables.items():
-          print(f"Loading {table_name}...")
-          df.to_sql(table_name,con= engine, if_exists="append", index=False)
-    print(f" Table {table_name} loaded sucessfuly")
+        # Optional manual drop inside valid connection scope
+        for table_name in tables_dict.keys():
+            conn.execute(text(f'DROP TABLE IF EXISTS "{table_name}" CASCADE'))
 
-load_tables_to_postgres(
-    USER=DB_USER,
-    PASSWORD=DB_PASS,
-    HOST=DB_HOST,
-    PORT=DB_PORT,
-    DBNAME=DB_NAME,
-    extract_data=ExtractData
-)
+    # Load tables using pandas engine connection
+    for table_name, df in tables_dict.items():
+        print(f"Loading {table_name}...")
+        df.to_sql(
+            table_name,
+            con=engine,
+            if_exists="append",  # Automatically handles drop + create
+            index=False,
+            chunksize=5000,
+            method="multi"
+        )
+        print(f"Table {table_name} loaded successfully.")
+
+    print("All tables loaded successfully.")
+
+
+if __name__ == "__main__":
+    load_tables_to_postgres(DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME, tables)
