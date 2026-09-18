@@ -22,6 +22,7 @@ fact_reviews – Contains customer review information and metrics related to how
   Project Structure
 
 The repository is organized into raw resources, Airflow DAGs, and supporting scripts:
+<img width="848" height="1264" alt="project structure" src="https://github.com/user-attachments/assets/7971ed01-2615-4f6d-884d-3e4709fcac6e" />
 
 
    Airflow Pipeline
@@ -57,7 +58,7 @@ Runs LoadDataIntoCsv.py and saves the transformed tables as CSV files in:
 
 The main DAG is configured to run hourly, allowing the complete workflow to be automated rather than having to run each script manually.
 
-🛠️ Technologies Used
+  Technologies Used
 Python 3.x – Main programming language
 Pandas – Data cleaning and transformation
 Apache Airflow – Workflow orchestration and scheduling
