@@ -22,8 +22,9 @@ fact_reviews – Contains customer review information and metrics related to how
   Project Structure
 
 The repository is organized into raw resources, Airflow DAGs, and supporting scripts:
+<p align="center">
 <img width="400" height="500" alt="project structure" src="https://github.com/user-attachments/assets/7971ed01-2615-4f6d-884d-3e4709fcac6e" />
-
+</p>
 
    Airflow Pipeline
 
