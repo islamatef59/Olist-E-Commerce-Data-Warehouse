@@ -23,22 +23,7 @@ fact_reviews – Contains customer review information and metrics related to how
 
 The repository is organized into raw resources, Airflow DAGs, and supporting scripts:
 
-.
-├── Resources/                       # Raw Olist CSV files
-│   ├── olist_orders_dataset.csv
-│   ├── olist_customers_dataset.csv
-│   ├── olist_order_items_dataset.csv
-│   ├── olist_order_payments_dataset.csv
-│   ├── olist_order_reviews_dataset.csv
-│   ├── olist_products_dataset.csv
-│   ├── olist_sellers_dataset.csv
-│   └── product_category_name_translation.csv
-├── dags/
-│   ├── ETL_Pipline.py              # Data transformation logic
-│   ├── LoadDataIntoCsv.py          # Exports transformed data to CSV
-│   ├── LoadFilesIntoDatabase.py    # Loads data into PostgreSQL
-│   └── AutomatePipeline.py         # Airflow DAG definitions
-└── README.md
+
    Airflow Pipeline
 
 Apache Airflow is used to automate and schedule the ETL process.
