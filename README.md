@@ -4,7 +4,7 @@ This project is an end-to-end data engineering pipeline built around the Brazili
 
 The main goal of the project is to turn the original Olist datasets into a format that is easier to query and use for analytics and reporting.
 
-🏗️ Data Warehouse Architecture
+  Data Warehouse Architecture
 
 The transformed data is organized into dimension and fact tables. Surrogate keys are used for the dimensions, while additional calculations are performed to create useful business metrics.
 
@@ -19,7 +19,7 @@ fact_orders – Stores order-level information and delivery-related metrics, inc
 fact_order_items – Contains individual order items along with their price, freight cost, and calculated total item value.
 fact_payments – Stores payment transactions, payment methods, values, installment counts, and whether a payment was made in installments.
 fact_reviews – Contains customer review information and metrics related to how quickly reviews were submitted or responded to.
-📂 Project Structure
+  Project Structure
 
 The repository is organized into raw resources, Airflow DAGs, and supporting scripts:
 
@@ -39,7 +39,7 @@ The repository is organized into raw resources, Airflow DAGs, and supporting scr
 │   ├── LoadFilesIntoDatabase.py    # Loads data into PostgreSQL
 │   └── AutomatePipeline.py         # Airflow DAG definitions
 └── README.md
-⚡ Airflow Pipeline
+   Airflow Pipeline
 
 Apache Airflow is used to automate and schedule the ETL process.
 
@@ -79,7 +79,7 @@ Apache Airflow – Workflow orchestration and scheduling
 PostgreSQL – Data warehouse database
 SQLAlchemy – Database connectivity and data loading
 Docker – Provides the runtime environment for Airflow and the pipeline
-🚀 Setup and Execution
+   Setup and Execution
 1. Configure the Environment
 
 Create a .env file in the project root, or provide the following environment variables through your Docker environment:
@@ -107,7 +107,7 @@ python dags/LoadFilesIntoDatabase.py
 Finally, export the transformed tables to CSV:
 
 python dags/LoadDataIntoCsv.py
-📌 Project Overview
+   Project Overview
 
 Overall, this project demonstrates a complete data engineering workflow starting from raw e-commerce data and ending with a structured data warehouse.
 
